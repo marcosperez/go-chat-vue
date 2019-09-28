@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/theme/default.css">
+    
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="app">
+        <layout>
+                <h2 slot="header">Here might be a page title</h2>
+                <span>A paragraph for the main content.</span>
+                <span slot="right-panel">And another one.</span>
+                <span slot="footer">Here's some contact info</span>
+        </layout>
+    </div>
+    <!-- Librerias de terceros -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-material"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <!-- Archivos propios -->
+    <script src="./clients/socker.js"></script>
+    <script src="./components/Layout.js"></script>
+    <script src="./ChatApp.js"></script>
+
+</body>
+</html>
