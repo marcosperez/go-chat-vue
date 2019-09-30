@@ -15,7 +15,7 @@
     
     <div id="app">
         <layout>
-                <h2 slot="header">Here might be a page title</h2>
+                <app-header slot="header" :status="status">Here might be a page title</app-header>
                 <span>A paragraph for the main content.</span>
                 <span slot="right-panel">And another one.</span>
                 <span slot="footer">Here's some contact info</span>
@@ -24,10 +24,10 @@
     <!-- Librerias de terceros -->
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/vue-material"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <!-- Archivos propios -->
     <script src="./clients/socker.js"></script>
     <script src="./components/Layout.js"></script>
+    <script src="./components/AppHeader.js"></script>
     <script src="./ChatApp.js"></script>
 
 </body>
