@@ -2,32 +2,47 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
+	"./handlers"
+	"./stores"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"golang.org/x/net/websocket"
 )
 
 func main() {
-	server := configureSocket()
-	// http.Handle("/ws", corsMiddleware(server))
-	// http.Handle("/", http.FileServer(http.Dir("./web")))
-	// log.Println("Serving at localhost:8357...")
-	// http.ListenAndServe(":8357", nil)
-
 	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(corsMiddleware())
+	// Instanciacion de stores (y services)
+	stores := stores.InitStores()
+	// Archivos estaticos
+	e.Static("/", "./web")
+	// Web socket
+	e.GET("/ws", wsHandler)
+	// Configuracion de api
+	apiConfiguration(e, stores)
+	// Start server
+	e.Logger.Fatal(e.Start(":8357"))
+}
 
-	e.Any("/ws", corsMiddleware(server))
+func apiConfiguration(e *echo.Echo, stores *stores.Stores) {
+	// Definicion de api
+	// USERS
+	g := e.Group("/api")
+	UserHandler := handlers.CreateUserHandler(stores)
+	g.POST("/users", UserHandler.CreateUser)
+}
 
-	e.Any.Handle("/", http.FileServer(http.Dir("./web")))
-
-	// e.GET("/", func(c echo.Context) error {
-	// 	return c.String(http.StatusOK, "Hello, World!")
-	// })
-	e.Logger.Fatal(e.Start(":1323"))
+// TODO: Mover a otro archivo
+func wsHandler(c echo.Context) error {
+	websocket.Handler(webSocketHandler).ServeHTTP(c.Response(), c.Request())
+	return nil
 }
 
 func webSocketHandler(ws *websocket.Conn) {
+	defer ws.Close()
 	var err error
 
 	for {
@@ -50,20 +65,10 @@ func webSocketHandler(ws *websocket.Conn) {
 	}
 }
 
-func configureSocket() http.Handler {
-	return websocket.Handler(webSocketHandler)
-}
-
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		enableCors(&w)
-		next.ServeHTTP(w, r)
+func corsMiddleware() echo.MiddlewareFunc {
+	return middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"https://labstack.com", "https://labstack.net"},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowCredentials: true,
 	})
-}
-
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5500")
-	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
-	// (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	// (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
