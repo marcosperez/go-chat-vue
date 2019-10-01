@@ -2,6 +2,11 @@ Vue.component('usersList', {
     template: //html
         `
         <md-list  class="users-list">
+            <div class="md-layout md-alignment-top-center" v-if="roomName">
+                <div class="md-layout-item md-size-20">
+                    <span class="md-list-item-text">{{roomName}}</span>
+                </div>
+            </div>
             <template v-for="u in users">
                 <md-list-item   v-if="user != u.name">
                     <md-avatar>
@@ -17,6 +22,6 @@ Vue.component('usersList', {
             </template>
         </md-list>
     `,
-    props: ["users", "user"]
+    props: ["users", "user", "roomName"]
 });
 // <user-item></user-item>

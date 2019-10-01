@@ -32,10 +32,14 @@
             leave-active-class="animated bounceOutRight"
         >
             <layout v-if="user != null">
-                <app-header slot="header" :user="user" :status="status">Here might be a page title</app-header>
-                <span>A paragraph for the main content.</span>
-                <users-list slot="right-panel" :user="user" :users="users"></users-list>
-                <span slot="footer">Here's some contact info</span>
+
+                <app-header slot="header" :user="user" :status="status"  @select-room="selectRoom"></app-header>
+
+                <span>content</span>
+
+                <users-list slot="right-panel" :user="user" :users="users" :room-name="roomName"></users-list>
+
+                <span slot="footer">footer</span>
             </layout>
         </transition>
     </div>

@@ -6,7 +6,7 @@ function SocketClient() {
     this.connect = function () {
         const client = this;
         this.socket = new WebSocket(config.wsURL);
-        const socket = this.socket;
+        // const socket = this.socket;
 
         this.socket.onopen = function () {
             client.onConnect();
@@ -33,6 +33,10 @@ function SocketClient() {
         var data = `${topic}:${msg}`
         this.socket.send(data);
     };
+
+    this.subscribe = function (topic) {
+        this.socket.send(`subscribe:${topic}`);
+    }
 }
 
 var socketClient = new SocketClient();
