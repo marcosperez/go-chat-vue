@@ -1,12 +1,13 @@
+Vue.use(VueMaterial.default)
 var app = new Vue({
     el: '#app',
     data: {
-        status: "desconectado"
+        status: "desconectado",
+        user: null,
     },
     mounted() {
         socketClient.onConnect = this.connected;
         socketClient.onDisconect = this.connected;
-        socketClient.connect();
     },
     methods: {
         connected: (evt) => {
@@ -14,6 +15,10 @@ var app = new Vue({
         },
         disconnect: (evt) => {
             app.status = "desconectado";
+        },
+        login: function (name) {
+            this.user = name;
+            socketClient.connect();
         }
     },
 })
