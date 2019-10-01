@@ -13,7 +13,7 @@ Vue.component('layout', {
                 <slot></slot>
             </div>
             
-            <div class="md-layout-item md-size-20 md-small-size-40" style="background-color:blue;">
+            <div class="md-layout-item md-size-20 md-small-size-40" style="">
                 <slot name="right-panel"></slot>
             </div>
         </div>
@@ -23,5 +23,6 @@ Vue.component('layout', {
             </div>
         </div>
     </div>
-    `
+    `,
+    props: ["user", "users"]
 })

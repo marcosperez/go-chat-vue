@@ -4,6 +4,7 @@ var app = new Vue({
     data: {
         status: "desconectado",
         user: null,
+        users: [],
     },
     mounted() {
         socketClient.onConnect = this.connected;
@@ -17,8 +18,11 @@ var app = new Vue({
             app.status = "desconectado";
         },
         login: function (name) {
-            this.user = name;
+            app.user = name;
             socketClient.connect();
+            apiClient.getChatData().then((data) => {
+                app.users = data.users || [];
+            });
         }
     },
 })

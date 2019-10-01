@@ -6,6 +6,13 @@ Vue.component('login', {
                     <label>Nombre de usuarios</label>
                     <md-input v-model="userName"  v-on:keyup.enter="login"></md-input>
                 </md-field>
+                <div class="md-layout-item">
+                <md-field>
+                <md-select v-model="room" name="room" id="room" placeholder="Sala">
+                    <md-option value="global">Global</md-option>
+                </md-select>
+                </md-field>
+            </div>
                 <md-button class="md-raised md-primary" @click="login">Login</md-button>
         </div>
     `,
@@ -13,25 +20,19 @@ Vue.component('login', {
     data: function () {
         return {
             userName: this.user,
+            room: "global"
         }
+    },
+    mounted() {
+        this.userName = "marcos";
+        this.login();
     },
     methods: {
         login: function () {
             var self = this;
-            fetch(`${config.baseUrl}/users`, {
-                method: 'POST', // or 'PUT'
-                body: JSON.stringify({ name: this.userName }), // data can be `string` or {object}!
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {
-                    console.log(data);
-                    self.$emit('login', data.name)
-                });
+            apiClient.login(this.userName, "").then(function (data) {
+                self.$emit('login', data.name, this.room)
+            });
         }
     },
 })

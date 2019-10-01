@@ -17,23 +17,39 @@
 <body>
     
     <div id="app">
-        <login v-if="user == null" :user="user" @login="login"></login>
-        <layout v-else>
+        <transition 
+            :duration="{ enter: 800, leave: 800 }"
+            name="login-transition" 
+            enter-active-class="animated bounceInRight"
+            leave-active-class="animated bounceOutLeft"
+        >
+            <login v-if="user == null" :user="user" @login="login"></login>
+        </transition>
+        <transition 
+            :duration="{ enter: 800, leave: 800 }"
+            name="chat-transition" 
+            enter-active-class="animated bounceInRight"
+            leave-active-class="animated bounceOutRight"
+        >
+            <layout v-if="user != null">
                 <app-header slot="header" :user="user" :status="status">Here might be a page title</app-header>
                 <span>A paragraph for the main content.</span>
-                <span slot="right-panel">And another one.</span>
+                <users-list slot="right-panel" :user="user" :users="users"></users-list>
                 <span slot="footer">Here's some contact info</span>
-        </layout>
+            </layout>
+        </transition>
     </div>
     <!-- Librerias de terceros -->
-    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue"></script> 
     <script src="https://unpkg.com/vue-material"></script>
     <!-- Archivos propios -->
     <script src="./config.js"></script>
     <script src="./clients/socket.js"></script>
+    <script src="./clients/api.js"></script>
     <script src="./components/Layout.js"></script>
     <script src="./components/AppHeader.js"></script>
     <script src="./components/Login.js"></script>
+    <script src="./components/Chat/UsersList.js"></script>
     <script src="./ChatApp.js"></script>
 
 </body>
