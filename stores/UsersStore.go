@@ -3,7 +3,7 @@ package stores
 import (
 	"errors"
 
-	"../models/common"
+	"github.com/marcosperez/go-chat-vue/models/common"
 	"github.com/rs/xid"
 )
 
@@ -16,7 +16,8 @@ type UsersStore interface {
 
 // UsersStoreMemory tipo de dato que implementa UsersStore
 type UsersStoreMemory struct {
-	users []common.User // base de datos en memoria ""
+	users    []common.User          // base de datos en memoria ""
+	usersMap map[string]common.User // Base de datos para acceso mas directo
 }
 
 // CreateUsersStoreMemory crea el store
@@ -26,7 +27,7 @@ func CreateUsersStoreMemory() *UsersStoreMemory {
 
 // CreateUser agrega un usuario a la "BD"
 func (u *UsersStoreMemory) CreateUser(name string) (user *common.User, err error) {
-	user = u.findUser(name)
+	user = u.findUserByName(name)
 	if user != nil {
 		return user, nil
 	}
@@ -34,6 +35,7 @@ func (u *UsersStoreMemory) CreateUser(name string) (user *common.User, err error
 	userID := xid.New()
 	newUser := common.User{ID: userID.String(), Name: name}
 	u.users = append(u.users, newUser)
+	u.usersMap[userID.String()] = newUser
 	return &newUser, nil
 }
 
@@ -42,16 +44,26 @@ func (u *UsersStoreMemory) GetUsers() ([]common.User, error) {
 	return u.users, nil
 }
 
-// GetUser metodo para obtener un usuario especifico por nombre (podria crearse una estructura de filtro)
-func (u *UsersStoreMemory) GetUser(name string) (*common.User, error) {
-	user := u.findUser(name)
+// GetUser metodo para obtener un usuario especifico por id
+func (u *UsersStoreMemory) GetUser(id string) (*common.User, error) {
+	user, exist := u.usersMap[id]
+	if exist {
+		return &user, nil
+	}
+	return nil, errors.New("No existe el usuario")
+}
+
+// GetUserByName metodo para obtener un usuario especifico por nombre
+func (u *UsersStoreMemory) GetUserByName(name string) (*common.User, error) {
+	user := u.findUserByName(name)
 	if user != nil {
 		return user, nil
 	}
 	return nil, errors.New("No existe el usuario")
 }
 
-func (u *UsersStoreMemory) findUser(name string) *common.User {
+// Metodos privados
+func (u *UsersStoreMemory) findUserByName(name string) *common.User {
 
 	for _, user := range u.users {
 		if user.Name == name {

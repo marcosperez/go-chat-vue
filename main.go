@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
-
-	"./handlers"
-	"./stores"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"golang.org/x/net/websocket"
+	"github.com/marcosperez/go-chat-vue/handlers"
+	"github.com/marcosperez/go-chat-vue/socket"
+	"github.com/marcosperez/go-chat-vue/stores"
 )
 
 func main() {
@@ -20,7 +18,8 @@ func main() {
 	// Archivos estaticos
 	e.Static("/", "./web")
 	// Web socket
-	e.GET("/ws", wsHandler)
+	ss := socket.CreateSocketServer()
+	e.GET("/ws", ss.SocketHandler)
 	// Configuracion de api
 	apiConfiguration(e, stores)
 	// Start server
@@ -37,34 +36,34 @@ func apiConfiguration(e *echo.Echo, stores *stores.Stores) {
 }
 
 // TODO: Mover a otro archivo
-func wsHandler(c echo.Context) error {
-	websocket.Handler(webSocketHandler).ServeHTTP(c.Response(), c.Request())
-	return nil
-}
+// func wsHandler(c echo.Context) error {
+// 	websocket.Handler(webSocketHandler).ServeHTTP(c.Response(), c.Request())
+// 	return nil
+// }
 
-func webSocketHandler(ws *websocket.Conn) {
-	defer ws.Close()
-	var err error
+// func webSocketHandler(ws *websocket.Conn) {
+// 	defer ws.Close()
+// 	var err error
 
-	for {
-		var reply string
+// 	for {
+// 		var reply string
 
-		if err = websocket.Message.Receive(ws, &reply); err != nil {
-			fmt.Println("Can't receive")
-			break
-		}
+// 		if err = websocket.Message.Receive(ws, &reply); err != nil {
+// 			fmt.Println("Can't receive")
+// 			break
+// 		}
 
-		fmt.Println("Received back from client: " + reply)
+// 		fmt.Println("Received back from client: " + reply)
 
-		msg := "Received:  " + reply
-		fmt.Println("Sending to client: " + msg)
+// 		msg := "Received:  " + reply
+// 		fmt.Println("Sending to client: " + msg)
 
-		if err = websocket.Message.Send(ws, msg); err != nil {
-			fmt.Println("Can't send")
-			break
-		}
-	}
-}
+// 		if err = websocket.Message.Send(ws, msg); err != nil {
+// 			fmt.Println("Can't send")
+// 			break
+// 		}
+// 	}
+// }
 
 func corsMiddleware() echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{

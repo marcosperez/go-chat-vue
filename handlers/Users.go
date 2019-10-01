@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"../models/common"
+	"github.com/marcosperez/go-chat-vue/models/common"
 
-	"../stores"
 	"github.com/labstack/echo"
+	"github.com/marcosperez/go-chat-vue/stores"
 )
 
 // UserHandler capturador de request de usuario
