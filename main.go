@@ -67,7 +67,7 @@ func webSocketHandler(ws *websocket.Conn) {
 
 func corsMiddleware() echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"https://labstack.com", "https://labstack.net"},
+		AllowOrigins:     []string{"http://127.0.0.1:5500"},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,
 	})

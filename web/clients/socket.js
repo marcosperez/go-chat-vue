@@ -1,18 +1,16 @@
 function SocketClient() {
 
-    this.url = "ws://127.0.0.1:8357/ws";
-
     this.onConnect = () => console.log("conectado")
     this.onDisconect = () => console.log("desconectado")
 
     this.connect = function () {
         const client = this;
-        this.socket = new WebSocket(this.url);
+        this.socket = new WebSocket(config.wsURL);
         const socket = this.socket;
 
         this.socket.onopen = function () {
             client.onConnect();
-            console.log("connected to " + this.url);
+            console.log("connected to " + config.wsURL);
             client.send("ping", "ping....")
             setInterval(() => {
                 client.send('ping', JSON.stringify("ping...."), function (data) {

@@ -17,7 +17,21 @@ Vue.component('login', {
     },
     methods: {
         login: function () {
-            this.$emit('login', this.userName)
+            var self = this;
+            fetch(`${config.baseUrl}/users`, {
+                method: 'POST', // or 'PUT'
+                body: JSON.stringify({ name: this.userName }), // data can be `string` or {object}!
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log(data);
+                    self.$emit('login', data.name)
+                });
         }
     },
 })
