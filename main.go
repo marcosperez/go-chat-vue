@@ -33,6 +33,7 @@ func apiConfiguration(e *echo.Echo, stores *stores.Stores) {
 	g := e.Group("/api")
 	UserHandler := handlers.CreateUserHandler(stores)
 	g.POST("/users", UserHandler.CreateUser)
+	g.GET("/users", UserHandler.GetUsers)
 }
 
 // TODO: Mover a otro archivo
