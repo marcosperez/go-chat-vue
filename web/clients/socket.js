@@ -13,10 +13,10 @@ function SocketClient() {
             console.log("connected to " + config.wsURL);
             client.send("ping", "ping....")
             setInterval(() => {
-                client.send('ping', JSON.stringify("ping...."), function (data) {
+                client.send('ping', 'ping', function (data) {
                     console.log('ACK from server wtih data: ', data);
                 })
-            }, 15000);
+            }, 2000);
         }
 
         this.socket.onclose = function (e) {
@@ -30,12 +30,15 @@ function SocketClient() {
     }
 
     this.send = function (topic, msg) {
-        var data = `${topic}:${msg}`
-        this.socket.send(data);
+        var data = {
+            type: topic,
+            data: msg
+        }
+        this.socket.send(JSON.stringify(data));
     };
 
     this.subscribe = function (topic) {
-        this.socket.send(`subscribe:${topic}`);
+        this.send("subscripcion", { room: topic });
     }
 }
 

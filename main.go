@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/marcosperez/go-chat-vue/handlers"
+	"github.com/marcosperez/go-chat-vue/models/chats"
 	"github.com/marcosperez/go-chat-vue/socket"
 	"github.com/marcosperez/go-chat-vue/stores"
 )
@@ -15,10 +16,15 @@ func main() {
 	e.Use(corsMiddleware())
 	// Instanciacion de stores (y services)
 	stores := stores.InitStores()
+	// InitSupervisor de chat
+	chatsSupervisor := chats.CreateChatsSupervisor()
+	chatsSupervisor.InitChatsSupervisor()
+	go chatsSupervisor.StartChatSupervisor()
 	// Archivos estaticos
 	e.Static("/", "./web")
 	// Web socket
 	ss := socket.CreateSocketServer()
+	ss.InjectDependencies(chatsSupervisor)
 	e.GET("/ws", ss.SocketHandler)
 	// Configuracion de api
 	apiConfiguration(e, stores)

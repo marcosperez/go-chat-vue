@@ -20,13 +20,16 @@ type Chat struct {
 }
 
 // CreateChat crea un chat nuevo por un usuario
-func CreateChat(userID string) (Chat, error) {
-	users := []string{userID}
+func CreateChat(chatID string) (Chat, error) {
+	users := []string{}
 	messages := []Message{}
-	chatID := xid.New()
-
-	chat := Chat{ID: chatID.String(), users: users, messages: messages}
-	return chat, nil
+	// Chat con ID bien conocido
+	if chatID != "" {
+		chat := Chat{ID: chatID, users: users, messages: messages}
+		return chat, nil
+	}
+	// Chat random
+	return Chat{ID: xid.New().String(), users: users, messages: messages}, nil
 }
 
 // Join se une un nuevo usario al chat
