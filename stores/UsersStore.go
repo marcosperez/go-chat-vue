@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/marcosperez/go-chat-vue/models/common"
-	"github.com/rs/xid"
 )
 
 // UsersStore interfacaz de metodos para Store de usuarios
@@ -22,7 +21,7 @@ type UsersStoreMemory struct {
 
 // CreateUsersStoreMemory crea el store
 func CreateUsersStoreMemory() *UsersStoreMemory {
-	return &UsersStoreMemory{users: []common.User{}}
+	return &UsersStoreMemory{users: []common.User{}, usersMap: make(map[string]common.User)}
 }
 
 // CreateUser agrega un usuario a la "BD"
@@ -32,10 +31,15 @@ func (u *UsersStoreMemory) CreateUser(name string) (user *common.User, err error
 		return user, nil
 	}
 
-	userID := xid.New()
-	newUser := common.User{ID: userID.String(), Name: name}
+	userID := name //xid.New().String()
+	newUser := common.User{
+		ID:      userID,
+		Name:    name,
+		ChatIDs: []string{"global"},
+	}
+	// Base de datos en memoria
 	u.users = append(u.users, newUser)
-	u.usersMap[userID.String()] = newUser
+	u.usersMap[userID] = newUser
 	return &newUser, nil
 }
 

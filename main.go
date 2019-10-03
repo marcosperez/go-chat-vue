@@ -11,32 +11,36 @@ import (
 
 func main() {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Logger.SetHeader("[${time_rfc3339}][${level}][${short_file}:${line}]")
+	e.Logger.SetLevel(2)
 	e.Use(middleware.Recover())
 	e.Use(corsMiddleware())
 	// Instanciacion de stores (y services)
 	stores := stores.InitStores()
 	// InitSupervisor de chat
 	chatsSupervisor := chats.CreateChatsSupervisor()
-	chatsSupervisor.InitChatsSupervisor()
-	go chatsSupervisor.StartChatSupervisor()
 	// Archivos estaticos
 	e.Static("/", "./web")
 	// Web socket
-	ss := socket.CreateSocketServer()
-	ss.InjectDependencies(chatsSupervisor)
-	e.GET("/ws", ss.SocketHandler)
+	socketServer := socket.CreateSocketServer()
+	e.GET("/ws", socketServer.SocketHandler)
 	// Configuracion de api
-	apiConfiguration(e, stores)
+	apiConfiguration(e, stores, chatsSupervisor)
+
+	// Inyeccion de dependencias
+	chatsSupervisor.InjectDependencies(e.Logger, stores, socketServer)
+	socketServer.InjectDependencies(stores, chatsSupervisor.Channel)
+
 	// Start server
+	chatsSupervisor.StartChatSupervisor()
 	e.Logger.Fatal(e.Start(":8357"))
 }
 
-func apiConfiguration(e *echo.Echo, stores *stores.Stores) {
+func apiConfiguration(e *echo.Echo, stores *stores.Stores, cs *chats.Supervisor) {
 	// Definicion de api
 	// USERS
 	g := e.Group("/api")
-	UserHandler := handlers.CreateUserHandler(stores)
+	UserHandler := handlers.CreateUserHandler(stores, cs)
 	g.POST("/users", UserHandler.CreateUser)
 	g.GET("/users", UserHandler.GetUsers)
 }

@@ -2,13 +2,13 @@ Vue.component('usersList', {
     template: //html
         `
         <md-list  class="users-list">
-            <div class="md-layout md-alignment-top-center" v-if="roomName">
+            <div class="md-layout md-alignment-top-center" v-if="chatID">
                 <div class="md-layout-item md-size-20">
-                    <span class="md-list-item-text">{{roomName}}</span>
+                    <span class="md-list-item-text">{{chatID}}</span>
                 </div>
             </div>
             <template v-for="u in users">
-                <md-list-item   v-if="user != u.name">
+                <md-list-item   v-if="user.name != u.name">
                     <md-avatar>
                         <md-icon>home</md-icon>
                     </md-avatar>
@@ -22,6 +22,6 @@ Vue.component('usersList', {
             </template>
         </md-list>
     `,
-    props: ["users", "user", "roomName"]
+    props: ["users", "user", "chatID"]
 });
 // <user-item></user-item>

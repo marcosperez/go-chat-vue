@@ -19,13 +19,13 @@ Vue.component('login', {
     },
     mounted() {
         this.userName = "marcos";
-        this.login();
+        // this.login();
     },
     methods: {
         login: function () {
             var self = this;
-            apiClient.login(this.userName, "").then(function (data) {
-                self.$emit('login', data.name)
+            apiClient.login(this.userName, "").then(function (user) {
+                self.$emit('login', user)
             });
         }
     },

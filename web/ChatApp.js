@@ -3,9 +3,12 @@ var app = new Vue({
     el: '#app',
     data: {
         status: "desconectado",
-        user: null,
+        user: {
+            name: null,
+            id: null,
+        },
         users: [],
-        roomName: ""
+        chatID: ""
     },
     mounted() {
         socketClient.onConnect = this.connected;
@@ -14,20 +17,21 @@ var app = new Vue({
     methods: {
         connected: (evt) => {
             app.status = "conectado";
-            socketClient.subscribe('global');
         },
         disconnect: (evt) => {
             app.status = "desconectado";
         },
-        login: function (name) {
-            app.user = name;
-            socketClient.connect();
-            apiClient.getChatData().then((data) => {
-                app.users = data.users || [];
-            });
+        login: function (user) {
+            app.user = user;
+            if (user.id) {
+                socketClient.connect(user.id);
+                apiClient.getChatData().then((data) => {
+                    app.users = data.users || [];
+                });
+            }
         },
-        selectRoom: function (roomName) {
-            this.roomName = roomName;
+        selectchatID: function (chatID) {
+            this.chatID = chatID;
 
         }
     },

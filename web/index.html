@@ -23,7 +23,7 @@
             enter-active-class="animated bounceInRight"
             leave-active-class="animated bounceOutLeft"
         >
-            <login v-if="user == null" :user="user" @login="login"></login>
+            <login v-if="user.id == null" :user="user" @login="login"></login>
         </transition>
         <transition 
             :duration="{ enter: 800, leave: 800 }"
@@ -31,13 +31,13 @@
             enter-active-class="animated bounceInRight"
             leave-active-class="animated bounceOutRight"
         >
-            <layout v-if="user != null">
+            <layout v-if="user.id != null">
 
-                <app-header slot="header" :user="user" :status="status"  @select-room="selectRoom"></app-header>
+                <app-header slot="header" :user="user" :status="status"  @select-chatID="selectchatID"></app-header>
 
                 <span>content</span>
 
-                <users-list slot="right-panel" :user="user" :users="users" :room-name="roomName"></users-list>
+                <users-list slot="right-panel" :user="user" :users="users" :chatID-name="chatID"></users-list>
 
                 <span slot="footer">footer</span>
             </layout>
