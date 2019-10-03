@@ -25,13 +25,13 @@ La pagina web se puede levantar con cualquier server HTTP.
 
 Yo uso la extension de VSCODE ´
 
-´´´
+```
 Name: Live Server
 Id: ritwickdey.liveserver
 Description: Launch a development local Server with live reload feature for static & dynamic pages
 Version: 5.6.1
 Publisher: Ritwick Dey
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
-´´´
+```
 
 - Proximamente Docket
