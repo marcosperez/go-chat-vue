@@ -7,13 +7,14 @@ Web estatica Vue.js y material (Proximamente VUEX)
 ### Funcionamiento
 #### Backend
 - Descargar dependencias
+
 ```
 go test
-
 ```
 
 - Basico
-````
+
+```
 go run main.go
 ```
 
