@@ -23,7 +23,7 @@ go run main.go
 #### WEB
 La pagina web se puede levantar con cualquier server HTTP.
 
-Yo uso la extension de VSCODE ´
+Yo uso la extension de VSCODE
 
 ```
 Name: Live Server
