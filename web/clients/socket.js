@@ -53,7 +53,7 @@ function SocketClient() {
     };
 
     this.subscribe = function (topic) {
-        this.send("subscripcion", { chatID: topic });
+        this.send("suscription", { chatID: topic });
     }
 }
 

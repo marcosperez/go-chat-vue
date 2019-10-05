@@ -35,7 +35,7 @@ func (u *UsersStoreMemory) CreateUser(name string) (user *common.User, err error
 	newUser := common.User{
 		ID:      userID,
 		Name:    name,
-		ChatIDs: []string{"global"},
+		ChatIDs: []string{"global", "users"},
 	}
 	// Base de datos en memoria
 	u.users = append(u.users, newUser)

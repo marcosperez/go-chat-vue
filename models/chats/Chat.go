@@ -19,7 +19,7 @@ type Chat struct {
 	ID       string
 	users    map[string]string
 	messages []ChatMessage
-	Channel  chan common.ChatData
+	Channel  chan common.ChatMessage
 
 	supervisor *Supervisor
 }
@@ -27,7 +27,7 @@ type Chat struct {
 // CreateChat crea un chat nuevo por un usuario
 func CreateChat(chatID string, supervisor *Supervisor) (*Chat, error) {
 	users := make(map[string]string)
-	channel := make(chan common.ChatData)
+	channel := make(chan common.ChatMessage)
 	messages := []ChatMessage{}
 	// Chat con ID bien conocido
 	if chatID == "" {

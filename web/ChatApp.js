@@ -25,7 +25,7 @@ var app = new Vue({
             app.user = user;
             if (user.id) {
                 socketClient.connect(user.id);
-                apiClient.getChatData().then((data) => {
+                apiClient.getChatMessage().then((data) => {
                     app.users = data.users || [];
                 });
             }

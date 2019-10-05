@@ -1,6 +1,6 @@
 function ApiClient() {
     // Inicializacion de recursos de la app
-    this.getChatData = function () {
+    this.getChatMessage = function () {
         return new Promise((resolve, reject) => {
             var pUsers = this.getUsers();
             return Promise.all([pUsers]).then(([users]) => {

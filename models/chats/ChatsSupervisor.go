@@ -9,19 +9,22 @@ import (
 
 // Supervisor encargado de gestion gorutinas de chat
 type Supervisor struct {
-	chats  map[string]*Chat
-	logger echo.Logger
-	stores *stores.Stores
-	ws     *socket.Server
-
-	Channel chan common.ChatData
+	chats    map[string]*Chat
+	logger   echo.Logger
+	stores   *stores.Stores
+	ws       *socket.Server
+	Channels *common.Channels
 }
 
 // CreateChatsSupervisor crea un supervisor para un grupo de chats
 func CreateChatsSupervisor() *Supervisor {
+	channels := &common.Channels{
+		ChatsChannel:        make(chan common.ChatMessage),
+		SuscriptionsChannel: make(chan common.SubscriptionMessage),
+	}
 	return &Supervisor{
-		chats:   make(map[string]*Chat),
-		Channel: make(chan common.ChatData),
+		chats:    make(map[string]*Chat),
+		Channels: channels,
 	}
 }
 
@@ -66,16 +69,16 @@ func (cs *Supervisor) StartChatSupervisor() {
 			cs.StopChatSupervisor()
 		}()
 		// Loop infinito de mensajeria
-		for chatData := range cs.Channel {
-			cs.logger.Infof("[ChatSupervisor] Mensaje: %v", chatData)
-			chat := cs.GetChat(chatData.ChatID)
-			chat.Channel <- chatData
+		for ChatMessage := range cs.Channels.ChatsChannel {
+			cs.logger.Infof("[ChatSupervisor] Mensaje: %v", ChatMessage)
+			chat := cs.GetChat(ChatMessage.ChatID)
+			chat.Channel <- ChatMessage
 		}
 	}()
 }
 
 // StopChatSupervisor compeltar
 func (cs *Supervisor) StopChatSupervisor() {
-	close(cs.Channel)
+	close(cs.Channels.ChatsChannel)
 	// completar
 }

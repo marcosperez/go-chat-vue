@@ -29,7 +29,7 @@ func main() {
 
 	// Inyeccion de dependencias
 	chatsSupervisor.InjectDependencies(e.Logger, stores, socketServer)
-	socketServer.InjectDependencies(stores, chatsSupervisor.Channel)
+	socketServer.InjectDependencies(stores, chatsSupervisor.Channels)
 
 	// Start server
 	chatsSupervisor.StartChatSupervisor()
