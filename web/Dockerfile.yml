@@ -1,0 +1,8 @@
+FROM duluca/minimal-node-web-server
+
+WORKDIR /usr/src/app
+
+# (optional) ENV NODE_ENV=local
+
+#COPY "your local folder on your development environment (dist, build, public, etc)" "server's public content folder inside the container (public)"
+COPY ./web public

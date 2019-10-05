@@ -1,16 +1,10 @@
-package common
+package models
 
-// Channels por los cuales se comunican con el supervisor de chats
-type Channels struct {
-	ChatsChannel        chan ChatMessage
-	SuscriptionsChannel chan SubscriptionMessage
-}
-
-// ChatMessage data de un mensaje de tipo chat
-type ChatMessage struct {
-	ChatID  string `json:"chatID"`
-	Message string `json:"message"`
-	UserID  string `json:"userID"`
+// ChannelMessage data de un mensaje de tipo channel
+type ChannelMessage struct {
+	ChannelID string `json:"channelID"`
+	Message   string `json:"message"`
+	UserID    string `json:"userID"`
 }
 
 // SendMessage que se envian al cliente
@@ -28,5 +22,6 @@ type ReceiverMessage struct {
 
 // SubscriptionMessage data de un mensaje de tipo suscription
 type SubscriptionMessage struct {
-	ChatID string `json:"chatID"`
+	ChannelID string `json:"channelID"`
+	UserID    string `json:"userID"` // TODO: Buscar forma mas elegante de identificar una conexion
 }

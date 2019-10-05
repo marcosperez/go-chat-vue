@@ -27,17 +27,17 @@
         </transition>
         <transition 
             :duration="{ enter: 800, leave: 800 }"
-            name="chat-transition" 
+            name="channel-transition" 
             enter-active-class="animated bounceInRight"
             leave-active-class="animated bounceOutRight"
         >
             <layout v-if="user.id != null">
 
-                <app-header slot="header" :user="user" :status="status"  @select-chatID="selectchatID"></app-header>
+                <app-header slot="header" :user="user" :status="status"  @select-channelID="selectchannelID"></app-header>
 
                 <span>content</span>
 
-                <users-list slot="right-panel" :user="user" :users="users" :chatID-name="chatID"></users-list>
+                <users-list slot="right-panel" :user="user" :users="users" :channelID-name="channelID"></users-list>
 
                 <span slot="footer">footer</span>
             </layout>

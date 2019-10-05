@@ -9,14 +9,14 @@ Vue.component('app-header', {
             <div class="md-layout-item  md-size-20 md-small-size-40 ">
                 <md-field>
                     <md-select 
-                    v-model="chatID" 
-                    name="chatID" 
-                    id="chatID" 
+                    v-model="channelID" 
+                    name="channelID" 
+                    id="channelID" 
                     placeholder="Sala" 
-                    @md-selected="selectchatID"
+                    @md-selected="selectchannelID"
                     >
                         <md-option value="global">Global</md-option>
-                        <md-option value="chatID 1">chatID1</md-option>
+                        <md-option value="channelID 1">channelID1</md-option>
                     </md-select>
                 </md-field>
             </div>
@@ -25,15 +25,15 @@ Vue.component('app-header', {
     props: ["status", "user"],
     data: function () {
         return {
-            chatID: "global"
+            channelID: "global"
         }
     },
     mounted() {
-        this.$emit("select-chatID", this.chatID)
+        this.$emit("select-channelID", this.channelID)
     },
     methods: {
-        selectchatID: function () {
-            this.$emit("select-chatID", this.chatID)
+        selectchannelID: function () {
+            this.$emit("select-channelID", this.channelID)
         }
     },
 })

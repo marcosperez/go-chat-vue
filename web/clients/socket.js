@@ -14,7 +14,7 @@ function SocketClient() {
             self.onConnect();
             self.send("connection")
             setTimeout(() => {
-                self.send("chat", { chatID: "global", message: "Hola mundo" })
+                self.send("channel", { channelID: "global", message: "Hola mundo" })
             })
         }
 
@@ -33,7 +33,7 @@ function SocketClient() {
                 case "ping":
                     console.log("[onmessage][ping]" + e.data);
                     self.send("pong")
-                case "chat":
+                case "channel":
                     console.log("[onmessage][ping]" + e.data);
                     self.send("pong")
                 default:
@@ -53,7 +53,7 @@ function SocketClient() {
     };
 
     this.subscribe = function (topic) {
-        this.send("suscription", { chatID: topic });
+        this.send("suscription", { channelID: topic });
     }
 }
 

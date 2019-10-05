@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-	"github.com/marcosperez/go-chat-vue/models/common"
+	"github.com/marcosperez/go-chat-vue/models"
 	"github.com/rs/xid"
 	"golang.org/x/net/websocket"
 )
@@ -53,7 +53,7 @@ func (c *Connection) startKeepAlive() {
 
 		for {
 			// Enviar ping para verificar si esta activo el socket
-			if err := websocket.JSON.Send(c.WS, common.SendMessage{Type: "ping"}); err != nil {
+			if err := websocket.JSON.Send(c.WS, models.SendMessage{Type: "ping"}); err != nil {
 				c.logger.Debugf("\n[Connection][keepAlive] Error al enviar ping , error: %s", err)
 			}
 			time.Sleep(timeoutKeepAlive / 3)

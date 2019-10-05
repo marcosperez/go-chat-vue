@@ -1,0 +1,49 @@
+version: '3.1'
+services:
+  web:
+    # build: ./web
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile.yml
+    ports:
+    - "3000:3000"
+    volumes:
+    - ./web:/usr/src/app/public
+    - logvolume01:/var/log
+    links:
+    - redis
+  redis:
+    image: redis:4.0.14-alpine
+    volumes:
+      - ./redis-data:/data
+
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+  
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: marcos.d.perez@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+       - pgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+volumes:
+  logvolume01: {}
+  redis-data:
+  postgres:
+  pgadmin:
+  

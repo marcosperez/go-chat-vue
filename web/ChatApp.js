@@ -8,7 +8,7 @@ var app = new Vue({
             id: null,
         },
         users: [],
-        chatID: ""
+        channelID: ""
     },
     mounted() {
         socketClient.onConnect = this.connected;
@@ -25,13 +25,13 @@ var app = new Vue({
             app.user = user;
             if (user.id) {
                 socketClient.connect(user.id);
-                apiClient.getChatMessage().then((data) => {
+                apiClient.getChannelMessage().then((data) => {
                     app.users = data.users || [];
                 });
             }
         },
-        selectchatID: function (chatID) {
-            this.chatID = chatID;
+        selectchannelID: function (channelID) {
+            this.channelID = channelID;
 
         }
     },

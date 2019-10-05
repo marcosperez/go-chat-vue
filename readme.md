@@ -1,4 +1,4 @@
-GoChat
+GoChannel
 Objetivo: Se busca implementar un chat con salas sin incluir librerias especificas de chat
 
 Servidor GO con framework ECHO 
@@ -34,4 +34,27 @@ Publisher: Ritwick Dey
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
 ```
 
-- Proximamente Docket
+### Proximamente Docket
+#### Desarrollo
+- Levantar contenedores
+```sh
+ docker-compose -f docker-compose-dev.yml up --build --force-recreate
+```
+
+-- Remover contenedores 
+```
+docker-compose -f docker-compose-dev.yml rm --force
+```
+
+### Conexion a server de redis
+```sh
+ docker run -it --network gochat_default --rm redis redis-cli -h redis
+```
+
+### Postgres
+
+- Ingreso a pgadmin
+http://localhost:5050/browser/#
+
+user: marcos.d.perez@gmail.com
+password: password

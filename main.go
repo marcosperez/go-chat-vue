@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/marcosperez/go-chat-vue/handlers"
-	"github.com/marcosperez/go-chat-vue/models/chats"
 	"github.com/marcosperez/go-chat-vue/socket"
 	"github.com/marcosperez/go-chat-vue/stores"
 )
@@ -17,31 +16,29 @@ func main() {
 	e.Use(corsMiddleware())
 	// Instanciacion de stores (y services)
 	stores := stores.InitStores()
-	// InitSupervisor de chat
-	chatsSupervisor := chats.CreateChatsSupervisor()
+	// InitSupervisor de channel
+
 	// Archivos estaticos
 	e.Static("/", "./web")
 	// Web socket
 	socketServer := socket.CreateSocketServer()
 	e.GET("/ws", socketServer.SocketHandler)
 	// Configuracion de api
-	apiConfiguration(e, stores, chatsSupervisor)
+	apiConfiguration(e, stores)
 
 	// Inyeccion de dependencias
-	chatsSupervisor.InjectDependencies(e.Logger, stores, socketServer)
-	socketServer.InjectDependencies(stores, chatsSupervisor.Channels)
-
-	// Start server
-	chatsSupervisor.StartChatSupervisor()
+	socketServer.InjectDependencies(stores, e.Logger)
 	e.Logger.Fatal(e.Start(":8357"))
 }
 
-func apiConfiguration(e *echo.Echo, stores *stores.Stores, cs *chats.Supervisor) {
+func apiConfiguration(e *echo.Echo, stores *stores.Stores) {
 	// Definicion de api
 	// USERS
 	g := e.Group("/api")
-	UserHandler := handlers.CreateUserHandler(stores, cs)
-	g.POST("/users", UserHandler.CreateUser)
+	UserHandler := handlers.CreateUserHandler(stores)
+	AuthHandler := handlers.CreateAuthHandler(stores)
+	g.POST("/auth/login", AuthHandler.Login)
+	// g.POST("/users", UserHandler.CreateUser)
 	g.GET("/users", UserHandler.GetUsers)
 }
 

@@ -6,7 +6,7 @@ import (
 	"runtime/debug"
 
 	"github.com/labstack/echo"
-	"github.com/marcosperez/go-chat-vue/models/common"
+	"github.com/marcosperez/go-chat-vue/models"
 	"github.com/marcosperez/go-chat-vue/stores"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/net/websocket"
@@ -14,21 +14,28 @@ import (
 
 // Server encargado de gestionar las conexiones WS
 type Server struct {
-	stores      *stores.Stores
-	connections map[string]*Connection
-	channels    *common.Channels
-	logger      echo.Logger
+	stores             *stores.Stores
+	connections        map[string]*Connection
+	logger             echo.Logger
+	ChannelsSupervisor *ChannelsSupervisor
 }
 
 // CreateSocketServer Crea una instancia de SocketServer
 func CreateSocketServer() *Server {
-	return &Server{connections: make(map[string]*Connection)}
+	cs := CreateChannelsSupervisor()
+
+	return &Server{
+		connections:        make(map[string]*Connection),
+		ChannelsSupervisor: cs,
+	}
 }
 
 // InjectDependencies metodo para inyectar dependencias al servidor de web socket
-func (ss *Server) InjectDependencies(stores *stores.Stores, channels *common.Channels) {
+func (ss *Server) InjectDependencies(stores *stores.Stores, l echo.Logger) {
 	ss.stores = stores
-	ss.channels = channels
+
+	ss.logger = l
+	ss.ChannelsSupervisor.InjectDependencies(l, stores, ss)
 }
 
 // GetConnection retorna una conexion asociada a un usuario
@@ -42,7 +49,7 @@ func (ss *Server) GetConnection(userID string) (*Connection, error) {
 
 // SocketHandler handler que recibe mensajes web socket
 func (ss *Server) SocketHandler(c echo.Context) error {
-	ss.logger = c.Logger()
+	ss.ChannelsSupervisor.StartChannelsChannelsSupervisor()
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer func() {
 			ss.recoverWS()
@@ -51,7 +58,7 @@ func (ss *Server) SocketHandler(c echo.Context) error {
 		var err error
 
 		for {
-			var message common.ReceiverMessage
+			var message models.ReceiverMessage
 
 			if err = websocket.JSON.Receive(ws, &message); err != nil {
 				c.Logger().Errorf("[WebSocket] Error al recibir el mensaje ")
@@ -63,13 +70,13 @@ func (ss *Server) SocketHandler(c echo.Context) error {
 				ss.onConnection(message, ws)
 
 			case "suscription":
-				ss.suscription(message)
+				ss.onSuscription(message)
 
-			case "chat":
-				ss.receiveChat(message)
+			case "channel":
+				ss.onReceiveChannel(message)
 
 			case "pong":
-				ss.receivePong(message)
+				ss.onReceivePong(message)
 
 			default:
 				c.Logger().Debugf("[WebSocket] Mensaje no controlado %v ", message)
@@ -79,27 +86,28 @@ func (ss *Server) SocketHandler(c echo.Context) error {
 	return nil
 }
 
-func (ss *Server) suscription(message common.ReceiverMessage) {
-	ss.logger.Debugf("[WebSocket] suscription %v ", message)
-	var ChatMessage common.ChatMessage
-	err := mapstructure.Decode(message.Data, &ChatMessage)
+func (ss *Server) onSuscription(message models.ReceiverMessage) {
+	ss.logger.Debugf("[WebSocket] onSuscription %v ", message)
+	var ChannelMessage models.SubscriptionMessage
+	err := mapstructure.Decode(message.Data, &ChannelMessage)
 	if err != nil {
 		ss.logger.Errorf("[WebSocket] Error al convertir data en tipo  %v", err)
 		return
 	}
-	ss.logger.Infof("[WebSocket] \nChatID: %v Mensaje: %v", ChatMessage.ChatID, ChatMessage.Message)
+	ChannelMessage.UserID = message.UserID
+	ss.logger.Infof("[WebSocket] \nChannelID: %v Mensaje: %v", ChannelMessage.ChannelID, ChannelMessage.UserID)
 	// suscribir a un canal especifico
-	ss.channels.ChatsChannel <- ChatMessage
+	ss.ChannelsSupervisor.Channels.SuscriptionsChannel <- ChannelMessage
 }
 
-func (ss *Server) onConnection(message common.ReceiverMessage, ws *websocket.Conn) {
+func (ss *Server) onConnection(message models.ReceiverMessage, ws *websocket.Conn) {
 	ss.logger.Debugf("[WebSocket] connection %v ", message)
 	conn := CreateConection(ws, ss.logger)
 	conn.OnClose = func(c *Connection) { delete(ss.connections, message.UserID) } // TODO mejorar mas elegantee
 	ss.connections[message.UserID] = conn
 }
 
-func (ss *Server) receivePong(message common.ReceiverMessage) {
+func (ss *Server) onReceivePong(message models.ReceiverMessage) {
 	ss.logger.Debugf("[WebSocket] Pong %v ", message)
 	conn, exist := ss.connections[message.UserID]
 	if exist {
@@ -107,17 +115,17 @@ func (ss *Server) receivePong(message common.ReceiverMessage) {
 	}
 }
 
-func (ss *Server) receiveChat(message common.ReceiverMessage) {
-	var ChatMessage common.ChatMessage
-	err := mapstructure.Decode(message.Data, &ChatMessage)
+func (ss *Server) onReceiveChannel(message models.ReceiverMessage) {
+	var ChannelMessage models.ChannelMessage
+	err := mapstructure.Decode(message.Data, &ChannelMessage)
 	if err != nil {
 		ss.logger.Errorf("[WebSocket] Error al convertir data en tipo  %v", err)
 		return
 	}
-	ss.logger.Infof("[WebSocket] \nChatID: %v Mensaje: %v", ChatMessage.ChatID, ChatMessage.Message)
-	ChatMessage.UserID = message.UserID
-	// Enviar mensaje a al chat
-	ss.channels.ChatsChannel <- ChatMessage
+	ss.logger.Infof("[WebSocket] \nChannelID: %v Mensaje: %v", ChannelMessage.ChannelID, ChannelMessage.Message)
+	ChannelMessage.UserID = message.UserID
+	// Enviar mensaje a al channel
+	ss.ChannelsSupervisor.Channels.MessagesChannel <- ChannelMessage
 }
 
 func (ss *Server) recoverWS() {
